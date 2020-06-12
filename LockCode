@@ -1,0 +1,219 @@
+
+#include <Servo.h> 
+
+#include <Keypad.h> 
+
+#include <Wire.h>
+
+#include <LCD.h>
+
+#include <LiquidCrystal_I2C.h>
+
+#define I2C_ADDR 0x27 
+
+#define BACKLIGHT_PIN 3
+
+#define En_pin 2
+
+#define Rw_pin 1
+
+#define Rs_pin 0
+
+#define D4_pin 4
+
+#define D5_pin 5
+
+#define D6_pin 6
+
+#define D7_pin 7
+
+LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin);
+
+const byte horizontal= 4; 
+
+const byte vertical= 4; 
+
+int code = 0000;  
+
+int password,i1,i2,i3,i4;
+
+char c1,c2,c3,c4;
+
+char keymap[horizontal][vertical]= 
+
+{
+
+{'1', '2', '3', 'A'}, 
+
+{'4', '5', '6', 'B'}, 
+
+{'7', '8', '9', 'C'},
+
+{'*', '0', '#', 'D'}
+
+};
+
+
+byte horPins[horizontal] = {9,8,7,6}; 
+
+byte verPins[vertical]= {5,4,3,2}; 
+
+
+Keypad myKeypad= Keypad(makeKeymap(keymap), horPins, verPins, horizontal, vertical);
+Servo myservo;
+
+void setup()
+
+           {
+            myservo.attach(11);
+            lcd.begin (16,2);
+
+            lcd.setBacklightPin(BACKLIGHT_PIN,POSITIVE);
+
+            lcd.setBacklight(HIGH);
+
+            lcd.home ();
+
+            lcd.print("Press *");
+
+            delay(2000);
+
+           }
+
+void loop()
+
+{
+
+      char pressed = myKeypad.getKey();  
+      
+
+         if (pressed == '*')         
+
+             {
+         
+               lcd.clear();
+
+               lcd.setCursor(0, 0);
+
+               lcd.print("Enter Code");                  
+
+                    pressed = myKeypad.waitForKey();  
+
+                    if (pressed != NO_KEY)
+
+                      {
+
+                       c1 = pressed;
+
+                       lcd.setCursor(0, 1);
+
+                       lcd.print("*");
+
+                       }
+
+                    pressed = myKeypad.waitForKey();
+
+                    if (pressed != NO_KEY)
+
+                      {
+
+                       c2 = pressed;
+
+                       lcd.setCursor(1, 1);
+
+                       lcd.print("*");
+
+                       }
+
+                     pressed = myKeypad.waitForKey();
+
+                   if (pressed != NO_KEY)
+
+                      {
+
+                       c3 = pressed;
+
+                       lcd.setCursor(2, 1);
+
+                       lcd.print("*");
+
+                       }
+
+                      pressed = myKeypad.waitForKey();
+
+                   if (pressed != NO_KEY)
+
+                      {
+
+                       c4 = pressed;
+
+                       lcd.setCursor(3, 1);
+
+                       lcd.print("*");
+
+                       }
+
+                     i1=(c1-48)*1000;        
+
+                     i2=(c2-48)*100;
+
+                     i3=(c3-48)*10;
+
+                     i4=c4-48;
+
+                     password=i1+i2+i3+i4;
+
+         
+
+        
+
+         if (password == code) 
+
+         {
+          
+
+          lcd.clear();
+
+          lcd.setCursor(0, 0);
+
+          lcd.print("Welcome");
+
+          lcd.setCursor(7, 1);
+
+          lcd.print("Kareem"); //you can put your name here instead of mine 
+       myservo.write(30);
+    delay(15);
+          delay(3000);
+
+          lcd.clear();
+
+          lcd.print("Press *");
+   
+
+         }
+
+         else 
+
+         {
+
+          lcd.clear();
+
+          lcd.setCursor(0, 0);
+
+          lcd.print("Wrong Password! ");          
+
+          delay(3000);
+
+          lcd.clear();
+
+          lcd.print("Press *");
+
+          
+
+         }
+
+               
+
+              }
+
+}
